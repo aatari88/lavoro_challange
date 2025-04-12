@@ -59,7 +59,7 @@ export default function TipoCambio() {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Tipo Cambio" />
-            <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
+            <div className="w-full max-w-7xl mx-auto flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
                 <div className="flex flex-wrap items-end gap-4">
                     <div>
                         <label className="text-sm font-semibold">Desde</label>
