@@ -2,6 +2,7 @@ import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -26,12 +27,12 @@ export default function TipoCambio() {
 
     const handleSearch = async() => {
         if (!from || !to) {
-            alert('Por favor, selecciona ambas fechas.');
+            toast.warning('Seleccione un rango válido');
             return;
         }
     
         if (new Date(from) > new Date(to)) {
-            alert('La fecha "Hasta" no puede ser menor que la fecha "Desde".');
+            toast.error('La fecha "hasta" no puede ser menor a "desde"');
             return;
         }
         
@@ -47,7 +48,7 @@ export default function TipoCambio() {
 
     const handleExport = async() => {
         if (!from || !to || datadb.length === 0) {
-            alert('No hay datos para exportar');
+            toast.warning('No hay datos para exportar');
             return;
         }
     
@@ -86,8 +87,9 @@ export default function TipoCambio() {
                     </button>
                     <button
                         onClick={handleExport}
-                        disabled={datadb.length === 0}
-                        className={`rounded-lg bg-green-600 px-4 py-2 text-white hover:bg-green-700 ${datadb.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        // disabled={datadb.length === 0}
+                        className={'rounded-lg bg-green-600 px-4 py-2 text-white hover:bg-green-700'}
+                        // className={`rounded-lg bg-green-600 px-4 py-2 text-white hover:bg-green-700 ${datadb.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
                         Descargar Excel
                     </button>
