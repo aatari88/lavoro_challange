@@ -5,9 +5,33 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreTipoCambioRequest;
 use App\Http\Requests\UpdateTipoCambioRequest;
 use App\Models\TipoCambio;
+use App\Services\SunatTipoCambioService;
+use Illuminate\Http\Request;
 
 class TipoCambioController extends Controller
 {
+
+    /**
+     * Find Tipo de Cambio Sunat.
+     */
+    public function find(Request $request)
+    {
+        $service = new SunatTipoCambioService();
+        $date = $request->input('fecha');
+        $tipoCambio = $service->getByDate($date);
+        if ($tipoCambio) {
+            return response()->json([
+                'compra' => $tipoCambio['compra'],
+                'venta' => $tipoCambio['venta'],
+                'fecha' => $tipoCambio['fecha']
+            ]);
+        }
+        return response()->json([
+            'error' => 'Tipo de cambio no encontrado para la fecha proporcionada.',
+        ], 404);
+
+    }
+
     /**
      * Display a listing of the resource.
      */
