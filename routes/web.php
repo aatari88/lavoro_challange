@@ -17,6 +17,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('tipo-cambio');
     Route::get('tipo-cambio/find', [TipoCambioController::class, 'find'])->name('tipo-cambio.find');
     Route::get('tipo-cambio/rango', [TipoCambioController::class, 'rango'])->name('tipo-cambio.rango');
+    Route::get('/tipo-cambio/exportar', [TipoCambioController::class, 'exportarExcel']);
+
 });
 
 require __DIR__.'/settings.php';

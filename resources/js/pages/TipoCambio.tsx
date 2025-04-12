@@ -45,7 +45,15 @@ export default function TipoCambio() {
         }
     }
 
-    const handleExport = async() => {}
+    const handleExport = async() => {
+        if (!from || !to || datadb.length === 0) {
+            alert('No hay datos para exportar');
+            return;
+        }
+    
+        const url = `/tipo-cambio/exportar?from=${from}&to=${to}`;
+        window.open(url, '_blank');
+    }
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -78,7 +86,8 @@ export default function TipoCambio() {
                     </button>
                     <button
                         onClick={handleExport}
-                        className="rounded-lg bg-green-600 px-4 py-2 text-white hover:bg-green-700"
+                        disabled={datadb.length === 0}
+                        className={`rounded-lg bg-green-600 px-4 py-2 text-white hover:bg-green-700 ${datadb.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
                         Descargar Excel
                     </button>

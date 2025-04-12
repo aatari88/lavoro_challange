@@ -8,6 +8,9 @@ use App\Models\TipoCambio;
 use App\Services\SunatTipoCambioService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class TipoCambioController extends Controller
 {
@@ -69,6 +72,53 @@ class TipoCambioController extends Controller
         }
 
         return response()->json($dates->sortBy('date')->values());
+    }
+
+    public function exportarExcel(Request $request)
+    {
+        $request->validate([
+            'from' => 'required|date',
+            'to' => 'required|date|after_or_equal:from',
+        ]);
+
+        $from = $request->input('from');
+        $to = $request->input('to');
+
+        $datos = TipoCambio::whereBetween('fecha', [$from, $to])
+            ->orderBy('fecha')
+            ->get(['fecha', 'moneda', 'compra', 'venta']);
+
+        // Crear hoja de cálculo
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Encabezados
+        $sheet->setCellValue('A1', 'Fecha');
+        $sheet->setCellValue('B1', 'Moneda');
+        $sheet->setCellValue('C1', 'Compra');
+        $sheet->setCellValue('D1', 'Venta');
+
+        // Datos
+        $row = 2;
+        foreach ($datos as $item) {
+            $sheet->setCellValue("A{$row}", $item->fecha);
+            $sheet->setCellValue("B{$row}", $item->moneda);
+            $sheet->setCellValue("C{$row}", $item->compra);
+            $sheet->setCellValue("D{$row}", $item->venta);
+            $row++;
+        }
+
+        // Exportar como archivo Excel
+        $filename = "tipo_cambio_{$from}_{$to}.xlsx";
+        $writer = new Xlsx($spreadsheet);
+
+        return new StreamedResponse(function () use ($writer) {
+            $writer->save('php://output');
+        }, 200, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-Disposition' => "attachment;filename=\"{$filename}\"",
+            'Cache-Control' => 'max-age=0',
+        ]);
     }
 
     /**
