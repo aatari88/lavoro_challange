@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\TipoCambioController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -14,7 +15,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('tipo-cambio', function () {
         return Inertia::render('TipoCambio');
     })->name('tipo-cambio');
-    Route::get('tipo-cambio/find', [App\Http\Controllers\TipoCambioController::class, 'find'])->name('tipo-cambio.find');
+    Route::get('tipo-cambio/find', [TipoCambioController::class, 'find'])->name('tipo-cambio.find');
+    Route::get('tipo-cambio/rango', [TipoCambioController::class, 'rango'])->name('tipo-cambio.rango');
 });
 
 require __DIR__.'/settings.php';

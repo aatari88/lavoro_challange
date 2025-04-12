@@ -9,4 +9,12 @@ class TipoCambio extends Model
 {
     /** @use HasFactory<\Database\Factories\TipoCambioFactory> */
     use HasFactory;
+
+    protected $table = 'tipo_cambios';
+    protected $fillable = [
+        'compra',
+        'venta',
+        'moneda',
+        'fecha'
+    ];
 }

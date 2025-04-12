@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class SunatTipoCambioService
 {
@@ -15,6 +16,10 @@ class SunatTipoCambioService
         if ($response->successful()) {
             return $response->json();
         }
+        Log::error('Error fetching data from Sunat API', [
+            'status' => $response->status(),
+            'response' => $response->body(),
+        ]);
         return null;
     }
 }

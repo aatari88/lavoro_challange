@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('tipo_cambios', function (Blueprint $table) {
             $table->id();
             $table->date('fecha')->unique();
+            $table->string('moneda', 8);
             $table->decimal('compra', 10, 4);
             $table->decimal('venta', 10, 4);
             $table->timestamps();

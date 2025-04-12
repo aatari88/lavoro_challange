@@ -6,6 +6,7 @@ use App\Http\Requests\StoreTipoCambioRequest;
 use App\Http\Requests\UpdateTipoCambioRequest;
 use App\Models\TipoCambio;
 use App\Services\SunatTipoCambioService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class TipoCambioController extends Controller
@@ -17,19 +18,57 @@ class TipoCambioController extends Controller
     public function find(Request $request)
     {
         $service = new SunatTipoCambioService();
-        $date = $request->input('fecha');
+        $date = $request->input('date');
         $tipoCambio = $service->getByDate($date);
         if ($tipoCambio) {
             return response()->json([
                 'compra' => $tipoCambio['compra'],
                 'venta' => $tipoCambio['venta'],
-                'fecha' => $tipoCambio['fecha']
+                'moneda' => $tipoCambio['moneda'],
+                'date' => $tipoCambio['date']
             ]);
         }
         return response()->json([
-            'error' => 'Tipo de cambio no encontrado para la fecha proporcionada.',
+            'error' => 'Tipo de cambio no encontrado para la date proporcionada.',
         ], 404);
 
+    }
+
+    public function rango(Request $request)
+    {
+        $service = new SunatTipoCambioService();
+        
+        $request->validate([
+            'from' => 'required|date',
+            'to' => 'required|date|after_or_equal:from',
+        ]);
+
+        $from = Carbon::parse($request->from)->format('Y-m-d');
+        $to = Carbon::parse($request->to)->format('Y-m-d');
+
+        $dates = collect();
+        $current = Carbon::parse($from);
+
+        while ($current->lte($to)) {
+            $date = $current->format('Y-m-d');
+            $exists = TipoCambio::where('fecha', $date)->first();
+
+            if (!$exists) {
+                $data = $service->getByDate($date);
+                if ($data) {
+                    $exists = TipoCambio::create($data);
+                }
+                sleep(3);
+            }
+
+            if ($exists) {
+                $dates->push($exists);
+            }
+
+            $current->addDay();
+        }
+
+        return response()->json($dates->sortBy('date')->values());
     }
 
     /**
